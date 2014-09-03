@@ -69,34 +69,36 @@ class GameScene < SKScene
   end
 
   def spawn_pipes
+    name = %w(colin matt tim).sample
+    # puts name
     pipe_pair = SKNode.new
-    pipe_pair.position = [size.width + pipe_texture_up.size.width, 0]
+    pipe_pair.position = [size.width + pipe_texture_up(name).size.width, 0]
     pipe_pair.zPosition = -10
 
     height = size.height / 4
     y = rand(60) - 20 % height + height
-    
-    pipe_down = SKSpriteNode.alloc.initWithTexture pipe_texture_down
+
+    pipe_down = SKSpriteNode.alloc.initWithTexture pipe_texture_down(name)
     pipe_down.position = [0, y + pipe_down.size.height + vertical_pipe_gap]
 
     pipe_down.physicsBody = SKPhysicsBody.bodyWithRectangleOfSize pipe_down.size
     pipe_down.physicsBody.dynamic = false
     pipe_pair.addChild pipe_down
 
-    pipe_up = SKSpriteNode.alloc.initWithTexture pipe_texture_up
+    pipe_up = SKSpriteNode.alloc.initWithTexture pipe_texture_up(name)
     pipe_up.position = [0, y]
-    
+
     pipe_up.physicsBody = SKPhysicsBody.bodyWithRectangleOfSize pipe_up.size
     pipe_up.physicsBody.dynamic = false
 
     pipe_pair.addChild pipe_up
-    pipe_pair.runAction move_pipes_and_remove
+    pipe_pair.runAction move_pipes_and_remove(name)
 
     addChild pipe_pair
   end
 
-  def move_pipes_and_remove
-    distance_to_move = size.width + 2.0 * pipe_texture_up.size.width
+  def move_pipes_and_remove(name)
+    distance_to_move = size.width + 2.0 * pipe_texture_up(name).size.width
     move_pipes = SKAction.moveByX(-distance_to_move, y:0.0, duration:0.02 * distance_to_move)
     remove_pipes = SKAction.removeFromParent
     SKAction.sequence [move_pipes, remove_pipes]
@@ -116,12 +118,12 @@ class GameScene < SKScene
     end
   end
 
-  def pipe_texture_up
-    texture_for "pipe_up"
+  def pipe_texture_up(name)
+    texture_for "#{name}_up"
   end
 
-  def pipe_texture_down
-    texture_for "pipe_down"
+  def pipe_texture_down(name)
+    texture_for "#{name}_down"
   end
 
   def ground_texture
@@ -157,7 +159,7 @@ class GameScene < SKScene
       bird.physicsBody.applyImpulse(CGVectorMake(0, 20))
     end
   end
-    
+
   def clamp(min, max, value)
     if value > max
       max
